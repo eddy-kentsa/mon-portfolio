@@ -1,0 +1,125 @@
+name: Validate & Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check index.html exists
+        run: |
+          if [ ! -f index.html ]; then
+            echo "::error::index.html not found"
+            exit 1
+          fi
+          echo "index.html found"
+
+      - name: Validate JavaScript syntax
+        run: |
+          errors=0
+          for file in $(find . -name '*.js' -not -path './node_modules/*'); do
+            if ! node --check "$file" 2>&1; then
+              echo "::error file=$file::Syntax error in $file"
+              errors=1
+            fi
+          done
+          exit $errors
+
+      - name: Validate CSS syntax
+        run: |
+          python3 -c "
+          import glob, sys
+          errors = 0
+          for path in glob.glob('**/*.css', recursive=True):
+              with open(path) as f:
+                  content = f.read()
+              depth = 0
+              for i, ch in enumerate(content):
+                  if ch == '{':
+                      depth += 1
+                  elif ch == '}':
+                      depth -= 1
+                  if depth < 0:
+                      print(f'::error file={path}::Unexpected }} at position {i}')
+                      errors = 1
+                      break
+              if depth > 0:
+                  print(f'::error file={path}::Unclosed {{ ({depth} remaining)')
+                  errors = 1
+              elif depth == 0 and errors == 0:
+                  print(f'{path}: OK')
+          sys.exit(errors)
+          "
+
+      - name: Validate HTML (unclosed tags)
+        run: |
+          python3 -c "
+          import glob, re, sys
+
+          VOID = {'area','base','br','col','embed','hr','img','input',
+                  'link','meta','param','source','track','wbr'}
+          TAG_RE = re.compile(r'<(/?)([a-zA-Z][a-zA-Z0-9]*)[^>]*?(/?)>')
+          errors = 0
+
+          for path in glob.glob('**/*.html', recursive=True):
+              with open(path) as f:
+                  content = f.read()
+              stack = []
+              for match in TAG_RE.finditer(content):
+                  closing, tag, self_closing = match.groups()
+                  tag = tag.lower()
+                  if tag in VOID or self_closing == '/':
+                      continue
+                  if closing:
+                      if stack and stack[-1] == tag:
+                          stack.pop()
+                      else:
+                          expected = stack[-1] if stack else 'none'
+                          print(f'::error file={path}::Unexpected </{tag}>, expected </{expected}>')
+                          errors = 1
+                          break
+                  else:
+                      stack.append(tag)
+              if stack and not errors:
+                  print(f'::error file={path}::Unclosed tags: {stack}')
+                  errors = 1
+              elif not stack:
+                  print(f'{path}: OK')
+          sys.exit(errors)
+          "
+
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
