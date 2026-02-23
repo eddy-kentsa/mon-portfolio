@@ -1,0 +1,38 @@
+[
+  {
+    "name": "afriship",
+    "description": "Application qui aide les particuliers à envoyer et recevoir des colis entre l'Afrique et l'Europe.",
+    "languages": ["TypeScript", "HTML", "JavaScript", "CSS"],
+    "url": "https://github.com/eddy-kentsa/afriship"
+  },
+  {
+    "name": "afriship-landing",
+    "description": "Page d'atterrissage du projet AfriShip, construite avec React et Vite.",
+    "languages": ["JavaScript", "HTML", "CSS"],
+    "url": "https://github.com/eddy-kentsa/afriship-landing"
+  },
+  {
+    "name": "mon-portfolio",
+    "description": "Mon portfolio développeur, construit avec Claude Code.",
+    "languages": ["HTML", "CSS", "JavaScript"],
+    "url": "https://github.com/eddy-kentsa/mon-portfolio"
+  },
+  {
+    "name": "hello-python",
+    "description": "Un script Python simple pour dire bonjour au monde.",
+    "languages": ["Python"],
+    "url": "https://github.com/eddy-kentsa/hello-python"
+  },
+  {
+    "name": "notes-cli",
+    "description": "Application CLI pour gérer des notes personnelles.",
+    "languages": ["Markdown"],
+    "url": "https://github.com/eddy-kentsa/notes-cli"
+  },
+  {
+    "name": "hello-eddy",
+    "description": "Pas de description disponible.",
+    "languages": ["JavaScript", "CSS", "HTML"],
+    "url": "https://github.com/eddy-kentsa/hello-eddy"
+  }
+]

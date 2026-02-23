@@ -1,0 +1,44 @@
+Audit d'accessibilité WCAG 2.1 AA — Log des corrections
+Date : 2026-02-20
+=============================================================
+
+CRITIQUE #1 — Image de profil sans sémantique
+  Fichier  : index.html (ligne 60-62)
+  Avant    : <div class="about__photo"><span>Photo</span></div>
+  Après    : <div class="about__photo" role="img" aria-label="Photo de profil de Eddy KENTSA"><span aria-hidden="true">Photo</span></div>
+  Impact   : Les lecteurs d'écran identifient maintenant l'élément comme une image avec description.
+
+CRITIQUE #2 — Lien LinkedIn pointant vers "#"
+  Fichiers : index.html, blog/index.html, blog/mon-premier-article.html, blog/apprendre-avec-ia.html
+  Avant    : <a href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+  Après    : <a href="https://www.linkedin.com/in/eddy-kentsa" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+  Impact   : Le lien mène désormais à une destination réelle.
+
+CRITIQUE #3 — Liens des projets dynamiques sans aria-label
+  Fichier  : js/main.js (lignes 74, 78)
+  Avant    : <a href="...">project.name</a> et <a href="..." class="project-card__link">Voir sur GitHub</a>
+  Après    : aria-label="Voir le projet X" et aria-label="Voir X sur GitHub" ajoutés
+  Impact   : Les lecteurs d'écran distinguent chaque lien de projet lors du parcours par liste de liens.
+
+IMPORTANT #4 — Barres du menu hamburger visibles aux lecteurs d'écran
+  Fichiers : index.html, blog/index.html, blog/mon-premier-article.html, blog/apprendre-avec-ia.html
+  Avant    : <span class="navbar__toggle-bar"></span> (x3)
+  Après    : <span class="navbar__toggle-bar" aria-hidden="true"></span> (x3)
+  Impact   : Les éléments décoratifs ne polluent plus la navigation des lecteurs d'écran.
+
+IMPORTANT #5 — Icônes SVG du bouton thème non masquées
+  Fichiers : index.html, blog/index.html, blog/mon-premier-article.html, blog/apprendre-avec-ia.html
+  Avant    : <svg class="theme-toggle__icon ...">
+  Après    : <svg class="theme-toggle__icon ..." aria-hidden="true">
+  Impact   : Les SVG décoratifs sont masqués ; le bouton est déjà décrit par son aria-label.
+
+IMPORTANT #6 — Message d'erreur projets non annoncé
+  Fichier  : js/main.js (ligne 87)
+  Avant    : <p class="projects-error">Impossible de charger les projets.</p>
+  Après    : <p class="projects-error" role="alert">Impossible de charger les projets.</p>
+  Impact   : En cas d'erreur, le message est annoncé automatiquement par les lecteurs d'écran.
+
+=============================================================
+Résumé : 6 problèmes corrigés (3 critiques + 3 importants)
+Fichiers modifiés : 5 (index.html, blog/index.html, blog/mon-premier-article.html, blog/apprendre-avec-ia.html, js/main.js)
+Score estimé après corrections : 9/10
